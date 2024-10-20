@@ -9,17 +9,22 @@ import Home from './pages/Home'
 import Buyer from './pages/Buyer'
 import Farmer from './pages/Farmer'
 import FarmerDashboard from './pages/FarmerDashboard'
+import BuyerDashboard from './pages/BuyerDashboard'
+import { AuthProvider } from './context/context'
 function App() {
   
 
   return (
     <>
+        <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/buyer" element={<Buyer/>}/>
         <Route path="/farmer" element={<Farmer/>}/>
         <Route path="/farmerdashboard" element={< FarmerDashboard />}/>
+        <Route path="/buyerdashboard" element={< BuyerDashboard />}/>
       </Routes>
+        </AuthProvider>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
   Paper,
   Grid,
 } from '@mui/material';
+import AuthContext from '../context/context';
 
 const categories = [
   'Fruits',
@@ -25,6 +26,7 @@ const categories = [
 ];
 
 const ListaProduct = () => {
+  const { token, name } = useContext(AuthContext);
   const [productTitle, setProductTitle] = useState('');
   const [productStock, setProductStock] = useState('');
   const [productCategory, setProductCategory] = useState('');
@@ -40,9 +42,8 @@ const ListaProduct = () => {
     setProductImage(file); // Store the file object in state
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your form submission logic here
     const formData = new FormData();
     formData.append('productTitle', productTitle);
     formData.append('productStock', productStock);
@@ -53,8 +54,34 @@ const ListaProduct = () => {
     formData.append('productMRP', productMRP);
     formData.append('productDescription', productDescription);
     formData.append('delivery', delivery);
+    formData.append('farmerName', name); // Add the farmer's name to the form data
 
-    console.log('Form data submitted:', Object.fromEntries(formData)); // For demo purposes
+    try {
+      const response = await fetch('http://localhost:5000/api/products/add', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include the token for authorization
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProductCategory("")
+        setProductExpiry('')
+        setDelivery("No")
+        setProductDescription("")
+        setProductStock("")
+        setProductTitle("")
+        setProductType("")
+        setProductMRP("")
+        console.log('Product added successfully:', data); // Handle success response
+      } else {
+        console.error('Failed to add product:', response.statusText); // Handle error response
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (

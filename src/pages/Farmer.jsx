@@ -1,13 +1,49 @@
-import React from 'react';
-import { Box, Button, TextField, Typography, Paper } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Box, Button, TextField, Typography, Paper, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import AuthContext from '../context/context';
 
 const Farmer = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const {  token, setToken, logout, usertype, setUsertype,name, setname } = useContext(AuthContext)
+  const handleSignIn = async () => {
+    console.log({
+      name: email,
+      userType: "farmer", // Setting userType to farmer by default
+      password
+    });
 
-  const handleSignIn = () => {
-    // Add sign-in logic here if needed
-    navigate('/farmerdashboard'); // Redirect to FarmerDashboard
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        name: email,
+        userType: "farmer", // Setting userType to farmer by default
+        password
+      });
+
+      // Assuming the API responds with a success message or token
+      if (response.data.token) {
+        setToken(response.data.token);
+        setUsertype(response.data.user.userType)
+        setname(response.data.user.name)
+
+        navigate('/farmerdashboard'); // Redirect to FarmerDashboard
+      } else {
+        setError(response.data.message || 'Login failed');
+        setOpenSnackbar(true);
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      setOpenSnackbar(true);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -41,6 +77,8 @@ const Farmer = () => {
           variant="outlined"
           fullWidth
           sx={{ marginBottom: '1rem' }}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
           label="Password"
@@ -48,10 +86,12 @@ const Farmer = () => {
           variant="outlined"
           fullWidth
           sx={{ marginBottom: '1rem' }}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <Button
           fullWidth
-          onClick={handleSignIn} 
+          onClick={handleSignIn}
           variant="contained"
           sx={{
             marginTop: '1.5rem',
@@ -65,6 +105,14 @@ const Farmer = () => {
           Sign In
         </Button>
       </Paper>
+
+      {/* Snackbar for error messages */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={error}
+      />
     </Box>
   );
 };
