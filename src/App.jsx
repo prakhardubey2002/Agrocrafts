@@ -13,6 +13,7 @@ import BuyerDashboard from './pages/BuyerDashboard'
 import { AuthProvider } from './context/context'
 import Cart from './components/Cart'
 import Checkout from './components/Checkout'
+import Invoice from './components/Invoice'
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/buyerdashboard" element={<BuyerDashboard />} />
             <Route path="/cart" element={<Cart />} /> {/* Cart route */}
             <Route path="/checkout" element={<Checkout/>}/>
+            <Route path="/invoicepdf/:id" element={<Invoice/>}/>
           </Routes>
         </AuthProvider>
     

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../context/context'; // Adjust the path as necessary
 import axios from 'axios'; // Ensure you have axios installed
+import { useNavigate } from 'react-router-dom';
 
 const Transaction = () => {
   const { name } = useContext(AuthContext); // Get the farmer's name from context
@@ -51,11 +52,11 @@ const Transaction = () => {
 
     fetchInvoices();
   }, [name]);
+  const navigate =useNavigate();
 
-  const downloadInvoice = (invoiceId) => {
+  const downloadInvoice = (invoiceId,invoice) => {
     // Logic to download the invoice as a PDF
-    const url = `http://localhost:5000/api/invoice/download/${invoiceId}`;
-    window.open(url, '_blank');
+    navigate(`/invoicepdf/${invoiceId}`, { state: invoice });
   };
 
   if (loading) return <div>Loading invoices...</div>;
@@ -98,7 +99,7 @@ const Transaction = () => {
                 </ul>
               </div>
               <button
-                onClick={() => downloadInvoice(invoice._id)}
+                onClick={() => downloadInvoice(invoice._id,invoice)}
                 className="download-button"
               >
                 Download Invoice PDF
