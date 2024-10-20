@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 import {
   AppBar,
   Toolbar,
@@ -18,12 +18,15 @@ import {
   Box,
   Menu,
   Alert,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import AuthContext from '../context/context';
-import { useNavigate } from 'react-router-dom';
+} from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import AuthContext from '../context/context'
+import { useNavigate } from 'react-router-dom'
+import ProductDetails from '../components/ProductDetails'
+import { CartContext } from '../context/CartContext'
+
 
 const categories = [
   'All',
@@ -34,60 +37,83 @@ const categories = [
   'Meat',
   'Beverages',
   'Snacks',
-];
+]
 
 const BuyerDashboard = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const { logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [products, setProducts] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const { logout } = useContext(AuthContext)
+  const navigate = useNavigate()
+  const [error, setError] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [openDetails, setOpenDetails] = useState(false)
+  const { cartItems, addToCart } = useContext(CartContext);
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true)
       try {
-        const response = await fetch('http://localhost:5000/api/products/products'); // Replace with your API URL
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
-        setProducts(data);
+        const response = await fetch('http://localhost:5000/api/products/products')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const data = await response.json()
+        setProducts(data)
       } catch (error) {
-        setError(error.message);
-        console.error('Error fetching products:', error);
+        setError(error.message)
+        console.error('Error fetching products:', error)
+      } finally {
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
   const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    const confirmLogout = window.confirm('Are you sure you want to logout?')
     if (confirmLogout) {
-      logout();
-      navigate('/');
+      logout()
+      navigate('/')
     }
-  };
+  }
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product)
+    setOpenDetails(true)
+  }
+
+  const handleCloseDetails = () => {
+    setOpenDetails(false)
+    setSelectedProduct(null)
+  }
 
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.productTitle
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'All' || product.productCategory === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+    if (!product || typeof product !== 'object') return false
+    
+    const matchesSearch = product.productTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false
+    const matchesCategory = selectedCategory === 'All' || product.productCategory === selectedCategory
+    return matchesSearch && matchesCategory
+  })
+
+  const handleAddToCart = (product) => {
+    try {
+      addToCart(product);
+      console.log(`${product.productTitle} added to cart!`);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      setError("Failed to add product to cart");
+    }
+  };
 
   return (
     <div>
@@ -123,7 +149,7 @@ const BuyerDashboard = () => {
             >
               Logo <ArrowDropDownIcon sx={{ color: '#fff' }} />
             </Typography>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={() => navigate('/cart')}>
               <ShoppingCartIcon />
             </IconButton>
           </Box>
@@ -174,6 +200,11 @@ const BuyerDashboard = () => {
         </Alert>
       )}
 
+      {/* Loading Indicator */}
+      {isLoading && (
+        <Typography>Loading products...</Typography>
+      )}
+
       {/* Products Section */}
       <Grid container spacing={2} sx={{ padding: '1rem' }}>
         {filteredProducts.map((product) => (
@@ -194,13 +225,34 @@ const BuyerDashboard = () => {
                 <Typography variant="body2" color="text.secondary">
                   Stock: {product.productStock}
                 </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => handleProductClick(product)}
+                  sx={{ marginTop: '1rem' }}
+                >
+                  View Product
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleAddToCart(product)}
+                  sx={{ marginTop: '1rem', marginLeft: '0.5rem' }}
+                >
+                  Add to Cart
+                </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-    </div>
-  );
-};
 
-export default BuyerDashboard;
+      {/* Product Details Dialog */}
+      <ProductDetails
+        open={openDetails}
+        onClose={handleCloseDetails}
+        product={selectedProduct}
+      />
+    </div>
+  )
+}
+
+export default BuyerDashboard
