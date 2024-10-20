@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 import Weather from '../components/weather';
 import ListaProduct from '../components/ListaProduct';
+import ViewProductfarm from '../components/ViewProductfarm';
+import AuthContext from '../context/context';
+import { useNavigate } from 'react-router-dom';
 
 const FarmerDashboard = () => {
   const [activeComponent, setActiveComponent] = useState('Weather');
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   // Function to render different components based on selected option
   const renderContent = () => {
     switch (activeComponent) {
       case 'Weather':
-        return <Weather/>;
+        return <Weather />;
       case 'List a Product':
-        return <ListaProduct/>;
+        return <ListaProduct />;
       case 'View All Products':
-        return <Typography variant="h6">View All Products Component</Typography>;
+        return <ViewProductfarm />;
       case 'Transactions':
         return <Typography variant="h6">Transactions Component</Typography>;
+      case 'Logout':
+        handleLogout(); // Call logout when this case is selected
+        return null; // Returning null as the component will redirect
       default:
-        return <Typography variant="h6">Select an option from the sidebar</Typography>;
+        return (
+          <Typography variant="h6">
+            Select an option from the sidebar
+          </Typography>
+        );
     }
   };
 
@@ -33,12 +50,25 @@ const FarmerDashboard = () => {
           padding: '1rem',
         }}
       >
-        <Typography variant="h5" sx={{ marginBottom: '2rem', textAlign: 'center' }}>
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: '2rem', textAlign: 'center' }}
+        >
           Farmer Dashboard
         </Typography>
         <List>
-          {['Weather', 'List a Product', 'View All Products', 'Transactions'].map((text) => (
-            <ListItem button key={text} onClick={() => setActiveComponent(text)}>
+          {[
+            'Weather',
+            'List a Product',
+            'View All Products',
+            'Transactions',
+            'Logout', // Added Logout option
+          ].map((text) => (
+            <ListItem
+              button
+              key={text}
+              onClick={() => setActiveComponent(text)}
+            >
               <ListItemText primary={text} />
             </ListItem>
           ))}
@@ -46,9 +76,7 @@ const FarmerDashboard = () => {
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ width: '80%', padding: '2rem' }}>
-        {renderContent()}
-      </Box>
+      <Box sx={{ width: '80%', padding: '2rem' }}>{renderContent()}</Box>
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -17,10 +17,13 @@ import {
   InputLabel,
   Box,
   Menu,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import AuthContext from '../context/context';
+import { useNavigate } from 'react-router-dom';
 
 const categories = [
   'All',
@@ -33,28 +36,33 @@ const categories = [
   'Snacks',
 ];
 
-const products = [
-  {
-    id: 1,
-    title: 'Fresh Apples',
-    category: 'Fruits',
-    image: 'https://via.placeholder.com/150',
-    price: '50',
-    description: 'Juicy and fresh apples',
-  },
-  {
-    id: 2,
-    title: 'Organic Carrots',
-    category: 'Vegetables',
-    image: 'https://via.placeholder.com/150',
-    price: '30',
-    description: 'Fresh organic carrots',
-  },
-  // Add more products as needed
-];
-
 const BuyerDashboard = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products/products'); // Replace with your API URL
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        setError(error.message);
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -65,10 +73,21 @@ const BuyerDashboard = () => {
   };
 
   const handleLogout = () => {
-    // Implement logout functionality here
-    console.log('Logout clicked');
-    handleMenuClose();
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (confirmLogout) {
+      logout();
+      navigate('/');
+    }
   };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.productTitle
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'All' || product.productCategory === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div>
@@ -90,6 +109,7 @@ const BuyerDashboard = () => {
                   <SearchIcon />
                 </InputAdornment>
               ),
+              onChange: (e) => setSearchTerm(e.target.value),
             }}
           />
           <Typography variant="h6" sx={{ flexGrow: 1, color: '#fff' }}>
@@ -122,9 +142,16 @@ const BuyerDashboard = () => {
 
       {/* Filter Section */}
       <Box sx={{ padding: '1rem', display: 'flex', alignItems: 'center' }}>
-        <FormControl variant="outlined" sx={{ marginRight: '1rem', minWidth: 120 }}>
+        <FormControl
+          variant="outlined"
+          sx={{ marginRight: '1rem', minWidth: 120 }}
+        >
           <InputLabel>Category</InputLabel>
-          <Select defaultValue="All" label="Category">
+          <Select
+            value={selectedCategory}
+            label="Category"
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
             {categories.map((category) => (
               <MenuItem key={category} value={category}>
                 {category}
@@ -132,28 +159,41 @@ const BuyerDashboard = () => {
             ))}
           </Select>
         </FormControl>
-        <Button variant="contained" sx={{ backgroundColor: '#388E3C', color: '#fff' }}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: '#388E3C', color: '#fff' }}
+        >
           Apply Filter
         </Button>
       </Box>
 
+      {/* Error Alert */}
+      {error && (
+        <Alert severity="error" sx={{ margin: '1rem' }}>
+          {error}
+        </Alert>
+      )}
+
       {/* Products Section */}
       <Grid container spacing={2} sx={{ padding: '1rem' }}>
-        {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product.id}>
+        {filteredProducts.map((product) => (
+          <Grid item xs={12} sm={6} md={4} key={product._id}>
             <Card>
               <CardMedia
                 component="img"
                 height="140"
-                image={product.image}
-                alt={product.title}
+                image={`http://localhost:5000/${product.productImage}`} // Adjust path based on your API
+                alt={product.productTitle}
               />
               <CardContent>
-                <Typography variant="h5">{product.title}</Typography>
+                <Typography variant="h5">{product.productTitle}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {product.description}
+                  {product.productDescription}
                 </Typography>
-                <Typography variant="h6">₹{product.price}</Typography>
+                <Typography variant="h6">₹{product.productMRP}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Stock: {product.productStock}
+                </Typography>
               </CardContent>
             </Card>
           </Grid>

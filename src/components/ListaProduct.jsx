@@ -67,6 +67,7 @@ const ListaProduct = () => {
 
       if (response.ok) {
         const data = await response.json();
+        alert("Product added Successfully")
         setProductCategory("")
         setProductExpiry('')
         setDelivery("No")
