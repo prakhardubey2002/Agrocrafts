@@ -1,42 +1,52 @@
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Paper } from '@mui/material';
-import axios from 'axios'; // Import axios for making HTTP requests
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useState } from 'react'
+import { Box, Button, TextField, Typography, Paper } from '@mui/material'
+import axios from 'axios' // Import axios for making HTTP requests
+import { useNavigate } from 'react-router-dom'
+import AuthContext from '../context/context'
 
 const SignInPage = () => {
-  const [email, setEmail] = useState(''); // State for email
-  const [password, setPassword] = useState(''); // State for password
-  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('') // State for email
+  const [password, setPassword] = useState('') // State for password
+  const [errorMessage, setErrorMessage] = useState('') // State for error messages
+  const {  token, setToken, logout, usertype, setUsertype,name, setname } = useContext(AuthContext)
+  const navigate = useNavigate()
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage(''); // Clear previous error message
+    e.preventDefault()
+    setErrorMessage('') // Clear previous error message
 
     try {
       // Make API call to the login endpoint
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        name: email, // Using email as the username
-        userType: "buyer",
-        password,
-      });
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/login',
+        {
+          name: email, // Using email as the username
+          userType: 'buyer',
+          password,
+        }
+      )
 
       // Store the JWT token (you can also store in local storage if needed)
-      const { token, user } = response.data;
-      navigate("/buyerdashboard")
-      console.log('Login successful:', user);
+      const { token, user } = response.data
+      if (response.data.token) {
+        setToken(response.data.token)
+        setUsertype(response.data.user.userType)
+        setname(response.data.user.name)
+      }
+      navigate('/buyerdashboard')
+      console.log('Login successful:', user)
       // You can store the token and user information as needed
     } catch (error) {
       // Handle errors here
       if (error.response) {
         // If there's a response from the server
-        setErrorMessage(error.response.data.message);
+        setErrorMessage(error.response.data.message)
       } else {
-        setErrorMessage('An error occurred. Please try again.');
+        setErrorMessage('An error occurred. Please try again.')
       }
-      console.error('Login failed:', error);
+      console.error('Login failed:', error)
     }
-  };
+  }
 
   return (
     <Box
@@ -45,7 +55,8 @@ const SignInPage = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'url("https://images.unsplash.com/photo-1543362906-acfc16c67564?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center/cover',
+        background:
+          'url("https://images.unsplash.com/photo-1543362906-acfc16c67564?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center/cover',
       }}
     >
       <Paper
@@ -64,7 +75,7 @@ const SignInPage = () => {
         >
           Buyer Sign In
         </Typography>
-        
+
         {/* Display error message if any */}
         {errorMessage && (
           <Typography color="error" sx={{ marginBottom: '1rem' }}>
@@ -110,7 +121,7 @@ const SignInPage = () => {
         </form>
       </Paper>
     </Box>
-  );
-};
+  )
+}
 
-export default SignInPage;
+export default SignInPage

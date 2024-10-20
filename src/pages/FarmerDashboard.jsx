@@ -5,6 +5,7 @@ import ListaProduct from '../components/ListaProduct';
 import ViewProductfarm from '../components/ViewProductfarm';
 import AuthContext from '../context/context';
 import { useNavigate } from 'react-router-dom';
+import Transaction from '../components/Transaction';
 
 const FarmerDashboard = () => {
   const [activeComponent, setActiveComponent] = useState('Weather');
@@ -26,7 +27,7 @@ const FarmerDashboard = () => {
       case 'View All Products':
         return <ViewProductfarm />;
       case 'Transactions':
-        return <Typography variant="h6">Transactions Component</Typography>;
+        return <Transaction/>;
       case 'Logout':
         handleLogout(); // Call logout when this case is selected
         return null; // Returning null as the component will redirect
