@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, CircularProgress, Paper, Grid, Button } from '@mui/material';
+import { Box, Typography, CircularProgress, Paper, Grid, Button, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import AuthContext from '../context/context';
 import { CheckCircle, Cancel, Info, Category } from '@mui/icons-material';
 
@@ -8,6 +8,9 @@ const ViewProductFarm = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState([]); // New state for categories
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,6 +32,27 @@ const ViewProductFarm = () => {
       fetchProducts();
     }
   }, [name]);
+
+  // Fetch categories for filtering (Assuming you have an endpoint for this)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products/categories'); // Adjust the endpoint as necessary
+        const data = await response.json();
+        setCategories(data); // Assuming the response is an array of category strings
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.productTitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory ? product.productCategory === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
 
   const deleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
@@ -64,11 +88,24 @@ const ViewProductFarm = () => {
       <Typography variant="h4" gutterBottom>
         Products for {name}
       </Typography>
-      {products.length === 0 ? (
+
+      {/* Search Bar and Category Filter */}
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
+        <TextField
+          variant="outlined"
+          label="Search by name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ marginRight: '1rem', flex: 1 }} // Make the search bar flexible
+        />
+      
+      </Box>
+
+      {filteredProducts.length === 0 ? (
         <Typography>No products found.</Typography>
       ) : (
         <Grid container spacing={2}>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Grid item xs={12} key={product._id}>
               <Paper elevation={3} sx={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
