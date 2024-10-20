@@ -8,6 +8,7 @@ import { useLottie } from "lottie-react";
 import Home from './pages/Home'
 import Buyer from './pages/Buyer'
 import Farmer from './pages/Farmer'
+import FarmerDashboard from './pages/FarmerDashboard'
 function App() {
   
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/buyer" element={<Buyer/>}/>
         <Route path="/farmer" element={<Farmer/>}/>
+        <Route path="/farmerdashboard" element={< FarmerDashboard />}/>
       </Routes>
     </>
   )

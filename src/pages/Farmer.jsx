@@ -1,7 +1,15 @@
 import React from 'react';
 import { Box, Button, TextField, Typography, Paper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Farmer = () => {
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    // Add sign-in logic here if needed
+    navigate('/farmerdashboard'); // Redirect to FarmerDashboard
+  };
+
   return (
     <Box
       sx={{
@@ -43,6 +51,7 @@ const Farmer = () => {
         />
         <Button
           fullWidth
+          onClick={handleSignIn} 
           variant="contained"
           sx={{
             marginTop: '1.5rem',
