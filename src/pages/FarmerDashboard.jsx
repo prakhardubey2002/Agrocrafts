@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 import Weather from '../components/weather';
+import ListaProduct from '../components/ListaProduct';
 
 const FarmerDashboard = () => {
   const [activeComponent, setActiveComponent] = useState('Weather');
@@ -11,7 +12,7 @@ const FarmerDashboard = () => {
       case 'Weather':
         return <Weather/>;
       case 'List a Product':
-        return <Typography variant="h6">List a Product Component</Typography>;
+        return <ListaProduct/>;
       case 'View All Products':
         return <Typography variant="h6">View All Products Component</Typography>;
       case 'Transactions':
