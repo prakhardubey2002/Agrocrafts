@@ -27,7 +27,6 @@ import { useNavigate } from 'react-router-dom'
 import ProductDetails from '../components/ProductDetails'
 import { CartContext } from '../context/CartContext'
 
-
 const categories = [
   'All',
   'Fruits',
@@ -49,14 +48,16 @@ const BuyerDashboard = () => {
   const [error, setError] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [openDetails, setOpenDetails] = useState(false)
-  const { cartItems, addToCart } = useContext(CartContext);
+  const { cartItems, addToCart } = useContext(CartContext)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch('http://localhost:5000/api/products/products')
+        const response = await fetch(
+          'http://localhost:5000/api/products/products'
+        )
         if (!response.ok) throw new Error('Failed to fetch products')
         const data = await response.json()
         setProducts(data)
@@ -99,21 +100,24 @@ const BuyerDashboard = () => {
 
   const filteredProducts = products.filter((product) => {
     if (!product || typeof product !== 'object') return false
-    
-    const matchesSearch = product.productTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false
-    const matchesCategory = selectedCategory === 'All' || product.productCategory === selectedCategory
+
+    const matchesSearch =
+      product.productTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+      false
+    const matchesCategory =
+      selectedCategory === 'All' || product.productCategory === selectedCategory
     return matchesSearch && matchesCategory
   })
 
   const handleAddToCart = (product) => {
     try {
-      addToCart(product);
-      console.log(`${product.productTitle} added to cart!`);
+      addToCart(product)
+      console.log(`${product.productTitle} added to cart!`)
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      setError("Failed to add product to cart");
+      console.error('Error adding to cart:', error)
+      setError('Failed to add product to cart')
     }
-  };
+  }
 
   return (
     <div>
@@ -201,9 +205,7 @@ const BuyerDashboard = () => {
       )}
 
       {/* Loading Indicator */}
-      {isLoading && (
-        <Typography>Loading products...</Typography>
-      )}
+      {isLoading && <Typography>Loading products...</Typography>}
 
       {/* Products Section */}
       <Grid container spacing={2} sx={{ padding: '1rem' }}>

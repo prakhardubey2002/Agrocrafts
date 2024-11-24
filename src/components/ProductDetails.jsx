@@ -1,5 +1,5 @@
 // ProductDetails.js
-import React from 'react';
+import React from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -8,10 +8,10 @@ import {
   Button,
   Typography,
   CardMedia,
-} from '@mui/material';
+} from '@mui/material'
 
 const ProductDetails = ({ open, onClose, product }) => {
-  if (!product) return null;
+  if (!product) return null
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -35,12 +35,15 @@ const ProductDetails = ({ open, onClose, product }) => {
         <Button onClick={onClose} color="primary">
           Close
         </Button>
-        <Button onClick={() => console.log('Add to Cart clicked')} color="primary">
+        <Button
+          onClick={() => console.log('Add to Cart clicked')}
+          color="primary"
+        >
           Add to Cart
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ProductDetails;
+export default ProductDetails

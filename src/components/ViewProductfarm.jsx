@@ -1,86 +1,111 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, CircularProgress, Paper, Grid, Button, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import AuthContext from '../context/context';
-import { CheckCircle, Cancel, Info, Category } from '@mui/icons-material';
+import React, { useEffect, useState, useContext } from 'react'
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Paper,
+  Grid,
+  Button,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from '@mui/material'
+import AuthContext from '../context/context'
+import { CheckCircle, Cancel, Info, Category } from '@mui/icons-material'
 
 const ViewProductFarm = () => {
-  const { name } = useContext(AuthContext); // Get farmer's name from context
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState([]); // New state for categories
+  const { name } = useContext(AuthContext) // Get farmer's name from context
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [categories, setCategories] = useState([]) // New state for categories
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/farmer/${name}`);
+        const response = await fetch(
+          `http://localhost:5000/api/products/farmer/${name}`
+        )
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Network response was not ok')
         }
-        const data = await response.json();
-        setProducts(data); // Assume your API returns an array of products
+        const data = await response.json()
+        setProducts(data) // Assume your API returns an array of products
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (name) {
-      fetchProducts();
+      fetchProducts()
     }
-  }, [name]);
+  }, [name])
 
   // Fetch categories for filtering (Assuming you have an endpoint for this)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products/categories'); // Adjust the endpoint as necessary
-        const data = await response.json();
-        setCategories(data); // Assuming the response is an array of category strings
+        const response = await fetch(
+          'http://localhost:5000/api/products/categories'
+        ) // Adjust the endpoint as necessary
+        const data = await response.json()
+        setCategories(data) // Assuming the response is an array of category strings
       } catch (err) {
-        console.error('Error fetching categories:', err);
+        console.error('Error fetching categories:', err)
       }
-    };
+    }
 
-    fetchCategories();
-  }, []);
+    fetchCategories()
+  }, [])
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.productTitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? product.productCategory === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.productTitle
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory
+      ? product.productCategory === selectedCategory
+      : true
+    return matchesSearch && matchesCategory
+  })
 
   const deleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/product/${id}`, {
-          method: 'DELETE',
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/products/product/${id}`,
+          {
+            method: 'DELETE',
+          }
+        )
 
         if (!response.ok) {
-          throw new Error('Failed to delete the product');
+          throw new Error('Failed to delete the product')
         }
 
         // Filter out the deleted product from the state
-        setProducts((prevProducts) => prevProducts.filter((product) => product._id !== id));
-        alert('Product deleted successfully.');
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product._id !== id)
+        )
+        alert('Product deleted successfully.')
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error deleting product.');
+        console.error('Error:', error)
+        alert('Error deleting product.')
       }
     }
-  };
+  }
 
   if (loading) {
-    return <CircularProgress />;
+    return <CircularProgress />
   }
 
   if (error) {
-    return <Typography color="error">Error: {error}</Typography>;
+    return <Typography color="error">Error: {error}</Typography>
   }
 
   return (
@@ -98,7 +123,6 @@ const ViewProductFarm = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{ marginRight: '1rem', flex: 1 }} // Make the search bar flexible
         />
-      
       </Box>
 
       {filteredProducts.length === 0 ? (
@@ -107,33 +131,59 @@ const ViewProductFarm = () => {
         <Grid container spacing={2}>
           {filteredProducts.map((product) => (
             <Grid item xs={12} key={product._id}>
-              <Paper elevation={3} sx={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                  <Category sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+                >
+                  <Category
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   {product.productTitle}
                 </Typography>
                 <Typography>
-                  <CheckCircle sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                  <CheckCircle
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   Stock: {product.productStock} kg
                 </Typography>
                 <Typography>
-                  <Info sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                  <Info
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   Category: {product.productCategory}
                 </Typography>
                 <Typography>
-                  <Info sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                  <Info
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   Type: {product.productType}
                 </Typography>
                 <Typography>
-                  <Info sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-                  Expiry Date: {new Date(product.productExpiry).toLocaleDateString()}
+                  <Info
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
+                  Expiry Date:{' '}
+                  {new Date(product.productExpiry).toLocaleDateString()}
                 </Typography>
                 <Typography>
-                  <Info sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                  <Info
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   MRP: ₹{product.productMRP}
                 </Typography>
                 <Typography>
-                  <Info sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                  <Info
+                    sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }}
+                  />
                   Description: {product.productDescription}
                 </Typography>
                 {product.productImage && (
@@ -162,7 +212,7 @@ const ViewProductFarm = () => {
         </Grid>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default ViewProductFarm;
+export default ViewProductFarm

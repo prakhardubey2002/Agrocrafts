@@ -1,51 +1,45 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Button, TextField, Typography, Paper } from '@mui/material'
-import axios from 'axios' // Import axios for making HTTP requests
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import AuthContext from '../context/context'
 
-const SignInPage = () => {
-  const [email, setEmail] = useState('') // State for email
+const RegisterPage = () => {
+  const [name, setName] = useState('') // State for username
+  const [userType, setUserType] = useState('buyer') // State for user type
   const [password, setPassword] = useState('') // State for password
   const [errorMessage, setErrorMessage] = useState('') // State for error messages
-  const { token, setToken, logout, usertype, setUsertype, name, setname } =
-    useContext(AuthContext)
+  const [successMessage, setSuccessMessage] = useState('') // State for success messages
   const navigate = useNavigate()
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrorMessage('') // Clear previous error message
+    setSuccessMessage('') // Clear previous success message
 
     try {
-      // Make API call to the login endpoint
+      // Make API call to the register endpoint
       const response = await axios.post(
-        'http://localhost:5000/api/auth/login',
+        'http://localhost:5000/api/auth/register',
         {
-          name: email, // Using email as the username
-          userType: 'buyer',
+          name,
+          userType,
           password,
         }
       )
 
-      // Store the JWT token (you can also store in local storage if needed)
-      const { token, user } = response.data
-      if (response.data.token) {
-        setToken(response.data.token)
-        setUsertype(response.data.user.userType)
-        setname(response.data.user.name)
-      }
-      navigate('/buyerdashboard')
-      console.log('Login successful:', user)
-      // You can store the token and user information as needed
+      setSuccessMessage('Registration successful! You can now sign in.')
+      setTimeout(() => {
+        navigate('/') // Redirect to sign-in page after successful registration
+      }, 3000)
+      console.log('Registration successful:', response.data)
     } catch (error) {
       // Handle errors here
       if (error.response) {
-        // If there's a response from the server
         setErrorMessage(error.response.data.message)
       } else {
         setErrorMessage('An error occurred. Please try again.')
       }
-      console.error('Login failed:', error)
+      console.error('Registration failed:', error)
     }
   }
 
@@ -74,23 +68,37 @@ const SignInPage = () => {
           variant="h5"
           sx={{ marginBottom: '1.5rem', color: '#2E7D32' }} // Farming green color
         >
-          Buyer Sign In
+          Register
         </Typography>
 
-        {/* Display error message if any */}
+        {/* Display error or success message */}
         {errorMessage && (
           <Typography color="error" sx={{ marginBottom: '1rem' }}>
             {errorMessage}
           </Typography>
         )}
+        {successMessage && (
+          <Typography color="success" sx={{ marginBottom: '1rem' }}>
+            {successMessage}
+          </Typography>
+        )}
 
         <form onSubmit={handleSubmit}>
           <TextField
-            label="Email"
+            label="Name"
             variant="outlined"
             fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{ marginBottom: '1rem' }}
+            required
+          />
+          <TextField
+            label="User Type (buyer/farmer)"
+            variant="outlined"
+            fullWidth
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
             sx={{ marginBottom: '1rem' }}
             required
           />
@@ -117,7 +125,7 @@ const SignInPage = () => {
               },
             }}
           >
-            Sign In
+            Register
           </Button>
         </form>
       </Paper>
@@ -125,4 +133,4 @@ const SignInPage = () => {
   )
 }
 
-export default SignInPage
+export default RegisterPage

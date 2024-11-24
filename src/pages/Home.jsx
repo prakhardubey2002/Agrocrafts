@@ -23,6 +23,9 @@ const Home = () => {
             Farmer
             <AgricultureIcon className="icon" />
           </Link>
+          <Link to="/register" >
+            Register
+          </Link>
         </div>
       </div>
     </div>

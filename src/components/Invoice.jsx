@@ -1,57 +1,59 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios'; // Ensure axios is installed
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import axios from 'axios' // Ensure axios is installed
 
 const InvoicePDF = () => {
-  const location = useLocation();
-  const invoice = location.state; // Access the invoice data from state
-  const [products, setProducts] = useState({}); // Store product details
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const location = useLocation()
+  const invoice = location.state // Access the invoice data from state
+  const [products, setProducts] = useState({}) // Store product details
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         // Extract product IDs from the invoice cart items
-        const productIds = invoice.cartItems.map(item => item.productId);
-        const uniqueProductIds = [...new Set(productIds)]; // Get unique product IDs
+        const productIds = invoice.cartItems.map((item) => item.productId)
+        const uniqueProductIds = [...new Set(productIds)] // Get unique product IDs
 
         // Fetch product details using product IDs
         const productResponses = await Promise.all(
-          uniqueProductIds.map(id =>
+          uniqueProductIds.map((id) =>
             axios.get(`http://localhost:5000/api/products/products/${id}`)
           )
-        );
+        )
 
         // Create a mapping of product IDs to product names
-        const productMapping = {};
-        productResponses.forEach(response => {
-          const productData = response.data; // Adjust based on your API response structure
-          productMapping[productData._id] = productData.productTitle; // Assuming `productTitle` is the name
-        });
+        const productMapping = {}
+        productResponses.forEach((response) => {
+          const productData = response.data // Adjust based on your API response structure
+          productMapping[productData._id] = productData.productTitle // Assuming `productTitle` is the name
+        })
 
-        setProducts(productMapping); // Update state with product names
+        setProducts(productMapping) // Update state with product names
       } catch (err) {
-        setError('Error fetching product details. Please try again.');
+        setError('Error fetching product details. Please try again.')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (invoice) {
-      fetchProductDetails();
+      fetchProductDetails()
     }
-  }, [invoice]); // Fetch product details when the invoice changes
+  }, [invoice]) // Fetch product details when the invoice changes
 
   // Calculate total amount
   const calculateTotal = () => {
-    return invoice.cartItems.reduce((total, item) => {
-      return total + item.quantity * item.price;
-    }, 0).toFixed(2);
-  };
+    return invoice.cartItems
+      .reduce((total, item) => {
+        return total + item.quantity * item.price
+      }, 0)
+      .toFixed(2)
+  }
 
-  if (loading) return <div>Loading product details...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div>Loading product details...</div>
+  if (error) return <div>{error}</div>
 
   return (
     <div style={styles.container}>
@@ -78,7 +80,7 @@ const InvoicePDF = () => {
           <ul>
             {invoice.cartItems.map((item) => (
               <li key={item.productId}>
-                {item.quantity} x ${item.price.toFixed(2)} 
+                {item.quantity} x ${item.price.toFixed(2)}
                 <br />
                 <strong>
                   Product Name: {products[item.productId] || 'Loading...'}
@@ -87,13 +89,16 @@ const InvoicePDF = () => {
             ))}
           </ul>
         </div>
-        <div className="invoice-total" style={{ marginTop: '20px', fontWeight: 'bold' }}>
+        <div
+          className="invoice-total"
+          style={{ marginTop: '20px', fontWeight: 'bold' }}
+        >
           <h4>Total: ${calculateTotal()}</h4>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // Styles for the invoice
 const styles = {
@@ -121,6 +126,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-};
+}
 
-export default InvoicePDF;
+export default InvoicePDF

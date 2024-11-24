@@ -14,6 +14,7 @@ import { AuthProvider } from './context/context'
 import Cart from './components/Cart'
 import Checkout from './components/Checkout'
 import Invoice from './components/Invoice'
+import RegisterPage from './pages/Register'
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/buyer" element={<Buyer />} />
             <Route path="/farmer" element={<Farmer />} />
             <Route path="/farmerdashboard" element={<FarmerDashboard />} />
+            <Route path='/register' element={<RegisterPage/>}/>
             <Route path="/buyerdashboard" element={<BuyerDashboard />} />
             <Route path="/cart" element={<Cart />} /> {/* Cart route */}
             <Route path="/checkout" element={<Checkout/>}/>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react'
 import {
   Box,
   Button,
@@ -11,8 +11,8 @@ import {
   FormHelperText,
   Paper,
   Grid,
-} from '@mui/material';
-import AuthContext from '../context/context';
+} from '@mui/material'
+import AuthContext from '../context/context'
 
 const categories = [
   'Fruits',
@@ -23,67 +23,67 @@ const categories = [
   'Beverages',
   'Snacks',
   'Other',
-];
+]
 
 const ListaProduct = () => {
-  const { token, name } = useContext(AuthContext);
-  const [productTitle, setProductTitle] = useState('');
-  const [productStock, setProductStock] = useState('');
-  const [productCategory, setProductCategory] = useState('');
-  const [productType, setProductType] = useState('');
-  const [productExpiry, setProductExpiry] = useState('');
-  const [productImage, setProductImage] = useState(null);
-  const [productMRP, setProductMRP] = useState('');
-  const [productDescription, setProductDescription] = useState('');
-  const [delivery, setDelivery] = useState('No');
+  const { token, name } = useContext(AuthContext)
+  const [productTitle, setProductTitle] = useState('')
+  const [productStock, setProductStock] = useState('')
+  const [productCategory, setProductCategory] = useState('')
+  const [productType, setProductType] = useState('')
+  const [productExpiry, setProductExpiry] = useState('')
+  const [productImage, setProductImage] = useState(null)
+  const [productMRP, setProductMRP] = useState('')
+  const [productDescription, setProductDescription] = useState('')
+  const [delivery, setDelivery] = useState('No')
 
   const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    setProductImage(file); // Store the file object in state
-  };
+    const file = event.target.files[0]
+    setProductImage(file) // Store the file object in state
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('productTitle', productTitle);
-    formData.append('productStock', productStock);
-    formData.append('productCategory', productCategory);
-    formData.append('productType', productType);
-    formData.append('productExpiry', productExpiry);
-    formData.append('productImage', productImage); // Append the image file
-    formData.append('productMRP', productMRP);
-    formData.append('productDescription', productDescription);
-    formData.append('delivery', delivery);
-    formData.append('farmerName', name); // Add the farmer's name to the form data
+    e.preventDefault()
+    const formData = new FormData()
+    formData.append('productTitle', productTitle)
+    formData.append('productStock', productStock)
+    formData.append('productCategory', productCategory)
+    formData.append('productType', productType)
+    formData.append('productExpiry', productExpiry)
+    formData.append('productImage', productImage) // Append the image file
+    formData.append('productMRP', productMRP)
+    formData.append('productDescription', productDescription)
+    formData.append('delivery', delivery)
+    formData.append('farmerName', name) // Add the farmer's name to the form data
 
     try {
       const response = await fetch('http://localhost:5000/api/products/add', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`, // Include the token for authorization
+          Authorization: `Bearer ${token}`, // Include the token for authorization
         },
         body: formData,
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
-        alert("Product added Successfully")
-        setProductCategory("")
+        const data = await response.json()
+        alert('Product added Successfully')
+        setProductCategory('')
         setProductExpiry('')
-        setDelivery("No")
-        setProductDescription("")
-        setProductStock("")
-        setProductTitle("")
-        setProductType("")
-        setProductMRP("")
-        console.log('Product added successfully:', data); // Handle success response
+        setDelivery('No')
+        setProductDescription('')
+        setProductStock('')
+        setProductTitle('')
+        setProductType('')
+        setProductMRP('')
+        console.log('Product added successfully:', data) // Handle success response
       } else {
-        console.error('Failed to add product:', response.statusText); // Handle error response
+        console.error('Failed to add product:', response.statusText) // Handle error response
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error submitting form:', error)
     }
-  };
+  }
 
   return (
     <Box
@@ -136,7 +136,9 @@ const ListaProduct = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                <FormHelperText>Select a category for the product</FormHelperText>
+                <FormHelperText>
+                  Select a category for the product
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={6}>
@@ -164,11 +166,7 @@ const ListaProduct = () => {
               />
             </Grid>
             <Grid item xs={6}>
-              <Button
-                variant="contained"
-                component="label"
-                fullWidth
-              >
+              <Button variant="contained" component="label" fullWidth>
                 Upload Product Image
                 <input
                   type="file"
@@ -178,7 +176,15 @@ const ListaProduct = () => {
                   required
                 />
               </Button>
-              {productImage && <Typography variant="body2" color="textSecondary" sx={{ marginTop: '0.5rem' }}>{productImage.name}</Typography>}
+              {productImage && (
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ marginTop: '0.5rem' }}
+                >
+                  {productImage.name}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={6}>
               <TextField
@@ -236,7 +242,7 @@ const ListaProduct = () => {
         </form>
       </Paper>
     </Box>
-  );
-};
+  )
+}
 
-export default ListaProduct;
+export default ListaProduct

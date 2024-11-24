@@ -1,50 +1,61 @@
-import React, { useContext, useState } from 'react';
-import { Box, Button, TextField, Typography, Paper, Snackbar } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import AuthContext from '../context/context';
+import React, { useContext, useState } from 'react'
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Snackbar,
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import AuthContext from '../context/context'
 
 const Farmer = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const {  token, setToken, logout, usertype, setUsertype,name, setname } = useContext(AuthContext)
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const { token, setToken, logout, usertype, setUsertype, name, setname } =
+    useContext(AuthContext)
   const handleSignIn = async () => {
     console.log({
       name: email,
-      userType: "farmer", // Setting userType to farmer by default
-      password
-    });
+      userType: 'farmer', // Setting userType to farmer by default
+      password,
+    })
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        name: email,
-        userType: "farmer", // Setting userType to farmer by default
-        password
-      });
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/login',
+        {
+          name: email,
+          userType: 'farmer', // Setting userType to farmer by default
+          password,
+        }
+      )
 
       // Assuming the API responds with a success message or token
       if (response.data.token) {
-        setToken(response.data.token);
+        setToken(response.data.token)
         setUsertype(response.data.user.userType)
         setname(response.data.user.name)
 
-        navigate('/farmerdashboard'); // Redirect to FarmerDashboard
+        navigate('/farmerdashboard') // Redirect to FarmerDashboard
       } else {
-        setError(response.data.message || 'Login failed');
-        setOpenSnackbar(true);
+        setError(response.data.message || 'Login failed')
+        setOpenSnackbar(true)
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
-      setOpenSnackbar(true);
+      setError('An error occurred. Please try again.')
+      setOpenSnackbar(true)
     }
-  };
+  }
 
   const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
+    setOpenSnackbar(false)
+  }
 
   return (
     <Box
@@ -53,7 +64,8 @@ const Farmer = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'url("https://images.unsplash.com/photo-1483871788521-4f224a86e166?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center/cover', // Add your background image
+        background:
+          'url("https://images.unsplash.com/photo-1483871788521-4f224a86e166?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center/cover', // Add your background image
       }}
     >
       <Paper
@@ -114,7 +126,7 @@ const Farmer = () => {
         message={error}
       />
     </Box>
-  );
-};
+  )
+}
 
-export default Farmer;
+export default Farmer

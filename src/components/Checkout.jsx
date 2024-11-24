@@ -27,7 +27,7 @@ const Checkout = () => {
     phoneNumber: '',
     paymentOption: 'Pay on Delivery', // Default value
   })
-  const navigate=useNavigate();
+  const navigate = useNavigate()
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -70,8 +70,8 @@ const Checkout = () => {
 
       const responseData = await response.json()
       console.log('Order placed successfully:', responseData)
-      alert("Order created successfully")
-      navigate("/buyerdashboard")
+      alert('Order created successfully')
+      navigate('/buyerdashboard')
       // Handle successful order placement (e.g., redirect to order confirmation page)
     } catch (error) {
       console.error('Error placing order:', error)

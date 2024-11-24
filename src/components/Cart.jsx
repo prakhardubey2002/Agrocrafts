@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext } from 'react'
 import {
   AppBar,
   Toolbar,
@@ -8,9 +8,9 @@ import {
   Card,
   CardContent,
   CardMedia,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // To navigate to checkout page
-import { CartContext } from '../context/CartContext';
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom' // To navigate to checkout page
+import { CartContext } from '../context/CartContext'
 
 const Cart = () => {
   const {
@@ -20,18 +20,18 @@ const Cart = () => {
     clearCart,
     increaseQuantity,
     decreaseQuantity,
-  } = useContext(CartContext);
+  } = useContext(CartContext)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleRemoveFromCart = (item) => {
-    removeFromCart(item._id);
-  };
+    removeFromCart(item._id)
+  }
 
   const handleProceedToCheckout = () => {
     // Navigate to checkout and pass cart items through the state
-    navigate('/checkout', { state: { cartItems } });
-  };
+    navigate('/checkout', { state: { cartItems } })
+  }
 
   return (
     <div>
@@ -59,7 +59,12 @@ const Cart = () => {
               <Card sx={{ display: 'flex', alignItems: 'center' }}>
                 <CardMedia
                   component="img"
-                  sx={{ width: 150, height: 150, objectFit: 'contain', margin: '1rem' }}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    objectFit: 'contain',
+                    margin: '1rem',
+                  }}
                   image={`http://localhost:5000/${item.productImage}`} // Assuming this is the image field in your product object
                   alt={item.productTitle}
                 />
@@ -70,7 +75,13 @@ const Cart = () => {
                   <Typography variant="h6" gutterBottom>
                     ₹{item.productMRP}
                   </Typography>
-                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginTop: '1rem',
+                    }}
+                  >
                     <Button
                       variant="outlined"
                       onClick={() => decreaseQuantity(item._id)}
@@ -105,7 +116,11 @@ const Cart = () => {
 
       {/* Total Cost and Checkout Button */}
       {cartItems.length > 0 && (
-        <Grid container justifyContent="space-between" sx={{ mt: 2, padding: '1rem' }}>
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ mt: 2, padding: '1rem' }}
+        >
           <Typography variant="h6">Subtotal:</Typography>
           <Typography variant="h6">₹{calculateTotal(cartItems)}</Typography>
         </Grid>
@@ -122,12 +137,12 @@ const Cart = () => {
         </Button>
       )}
     </div>
-  );
-};
+  )
+}
 
 // Helper function to calculate total
 const calculateTotal = (items) => {
-  return items.reduce((sum, item) => sum + item.productMRP * item.quantity, 0);
-};
+  return items.reduce((sum, item) => sum + item.productMRP * item.quantity, 0)
+}
 
-export default Cart;
+export default Cart

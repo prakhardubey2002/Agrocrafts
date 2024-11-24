@@ -1,66 +1,68 @@
-import React, { useContext, useEffect, useState } from 'react';
-import AuthContext from '../context/context'; // Adjust the path as necessary
-import axios from 'axios'; // Ensure you have axios installed
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react'
+import AuthContext from '../context/context' // Adjust the path as necessary
+import axios from 'axios' // Ensure you have axios installed
+import { useNavigate } from 'react-router-dom'
 
 const Transaction = () => {
-  const { name } = useContext(AuthContext); // Get the farmer's name from context
-  const [invoices, setInvoices] = useState([]);
-  const [products, setProducts] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { name } = useContext(AuthContext) // Get the farmer's name from context
+  const [invoices, setInvoices] = useState([])
+  const [products, setProducts] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         // Fetch invoices for the farmer
-        const response = await axios.get(`http://localhost:5000/api/invoice/invoices/by-farmer/${name}`);
-        setInvoices(response.data);
+        const response = await axios.get(
+          `http://localhost:5000/api/invoice/invoices/by-farmer/${name}`
+        )
+        setInvoices(response.data)
 
         // Extract product IDs from the invoices
         const productIds = response.data.flatMap((invoice) =>
           invoice.cartItems.map((item) => item.productId)
-        );
-        console.log("Product IDs:", productIds); // Log product IDs
+        )
+        console.log('Product IDs:', productIds) // Log product IDs
 
         // Fetch product details using product IDs
-        const uniqueProductIds = [...new Set(productIds)];
-        console.log("Unique Product IDs:", uniqueProductIds); // Log unique product IDs
+        const uniqueProductIds = [...new Set(productIds)]
+        console.log('Unique Product IDs:', uniqueProductIds) // Log unique product IDs
 
         const productResponses = await Promise.all(
           uniqueProductIds.map((id) =>
             axios.get(`http://localhost:5000/api/products/products/${id}`)
           )
-        );
+        )
 
-        const productMapping = {};
+        const productMapping = {}
         productResponses.forEach((response) => {
-          console.log("Product Response:", response.data); // Log each product response
-          const productData = response.data;
-          productMapping[productData._id] = productData.productTitle; // Map product ID to product title
-        });
+          console.log('Product Response:', response.data) // Log each product response
+          const productData = response.data
+          productMapping[productData._id] = productData.productTitle // Map product ID to product title
+        })
 
-        setProducts(productMapping);
+        setProducts(productMapping)
       } catch (err) {
-        console.error("Error fetching invoices:", err);
-        setError('Error fetching invoices. Please try again.');
+        console.error('Error fetching invoices:', err)
+        setError('Error fetching invoices. Please try again.')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchInvoices();
-  }, [name]);
-  const navigate =useNavigate();
+    fetchInvoices()
+  }, [name])
+  const navigate = useNavigate()
 
-  const downloadInvoice = (invoiceId,invoice) => {
+  const downloadInvoice = (invoiceId, invoice) => {
     // Logic to download the invoice as a PDF
-    navigate(`/invoicepdf/${invoiceId}`, { state: invoice });
-  };
+    navigate(`/invoicepdf/${invoiceId}`, { state: invoice })
+  }
 
-  if (loading) return <div>Loading invoices...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div>Loading invoices...</div>
+  if (error) return <div>{error}</div>
 
   return (
     <div className="transaction-container">
@@ -99,7 +101,7 @@ const Transaction = () => {
                 </ul>
               </div>
               <button
-                onClick={() => downloadInvoice(invoice._id,invoice)}
+                onClick={() => downloadInvoice(invoice._id, invoice)}
                 className="download-button"
               >
                 Download Invoice PDF
@@ -109,7 +111,7 @@ const Transaction = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Transaction;
+export default Transaction
